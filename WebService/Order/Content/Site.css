@@ -1,0 +1,48 @@
+﻿body {
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+/* Allow a table surrounded by a div to be scrollable */
+.scrolltable {
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+} 
+.scrolltable > .header { } 
+.scrolltable > .body {    
+    flex: 1;
+    -webkit-flex: 1;
+}
+th, td {
+   min-width: 100px; 
+}
+
+ul.actions {
+	cursor: default;
+	list-style: none;
+	padding-left: 0;
+}
+
+	ul.actions li {
+		display: inline-block;
+		padding: 0 1em 0 0;
+		vertical-align: middle;
+	}
+
+		ul.actions li:last-child {
+			padding-right: 0;
+		}

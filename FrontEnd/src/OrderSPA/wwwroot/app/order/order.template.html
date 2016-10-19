@@ -1,0 +1,301 @@
+﻿<section id="order" class="main special">
+    <header class="major">
+        <h2>Orders &nbsp;</h2>
+    </header>
+    <p id="pageMsg">{{data.msg}}</p>
+    <div >
+        <ul id="pageMsgLst">
+            <li ng-repeat="row in data.msgList">{{row}}</li>
+        </ul>
+    </div>
+    <form name="orderform" action="." novalidate>
+        <section id="ordersection" class="bordered">
+            <div class="table-wrapper">
+                <table id="orderList">
+                    <caption class="section">Orders</caption>
+                    <thead>
+                        <tr width="100%">
+                            <th width="5%">&nbsp;</th>
+                            <th width="8%">Id</th>
+                            <th width="30%">Name</th>
+                            <th width="7%">Status</th>
+                            <th width="5%">Test</th>
+                            <th width="15%">Due In Store</th>
+                            <th width="30%">
+                                <span>Ship To</span><span class="major">&nbsp;</span><span><a href="" id="addOrderButton" ng-click="addOrder()" class="col-sm-4 button small">Add</a></span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="ord in orders">
+                            <td ng-click="selectOrder(ord)" ng-show="ord.id==order.id" class="align-left">&#9654;</td>
+                            <td ng-click="selectOrder(ord)" ng-hide="ord.id==order.id" class="align-left">&nbsp;</td>
+                            <td ng-click="selectOrder(ord)" class="align-left">{{ord.id}}</td>
+                            <td ng-click="selectOrder(ord)" class="align-left">{{ord.name}}</td>
+                            <td ng-click="selectOrder(ord)" class="align-left">{{ord.status}}</td>
+                            <td ng-click="selectOrder(ord)" class="align-left">{{ord.test}}</td>
+                            <td ng-click="selectOrder(ord)" class="align-left">{{ord.dueInStoreDt}}</td>
+                            <td ng-click="selectOrder(ord)" class="align-left">{{getShipText(ord.shipTo)}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-show="(order.name || orderform.ordername.$dirty || order.isNew=='true')">
+                <div class="dataentry" ng-show="!(promotion.promoText || promotion.isNew=='true') && !(sign.signType || sgn.isNew=='true')">
+                    <strong>{{order.name}} order</strong>
+                    <table class="layout">
+                        <tr>
+                            <td>Name</td>
+                            <td>
+                                <input type="text" name="ordername" ng-model="order.name" required pattern="[a-zA-Z0-9].{3,99}" ng-disabled="order.status=='Completed'" />
+                                <div ng-if="orderform.ordername.$dirty">
+                                    <div>
+                                        <span id="orderNameRequired" ng-show="orderform.ordername.$error.required">Required</span>
+                                        <span id="orderNameFormat" ng-show="orderform.ordername.$error.pattern">Name must be at least 4 characters long and start with a letter or number and a maximum of 100 characerts</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>&nbsp</td>
+                            <td>Ship To</td>
+                            <td>
+                                <select name="ordershipTo" ng-model="order.shipTo" required ng-disabled="order.status=='Completed'">
+                                    <option ng-repeat="item in data.shipLst" value="{{item.value}}" ng-selected="item.value==order.shipTo">{{item.text}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>{{order.status}}</td>
+                            <td>&nbsp</td>
+                            <td>Due In Store</td>
+                            <td>
+                                <input name="orderdis" datetime-picker date-format="yyyy-MM-dd" date-only ng-model="order.dueInStoreDt" required ng-disabled="order.status=='Completed'" pattern="\d{4}\-((0[1-9])|(1[012]))\-(([0][1-9])|([12][0-9])|(3[01]))" />
+                                <div ng-if="orderform.orderdis.$dirty">
+                                    <div>
+                                        <span id="orderDISRequired" ng-show="orderform.orderdis.$error.required">Required</span>
+                                        <span id="orderDISFormat" ng-show="orderform.orderdis.$error.pattern">Date must be in the YYYY-MM-DD format</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Test</td>
+                            <td>
+                                <input type="checkbox" name="ordertest" ng-model="order.test" ng-true-value="true" ng-false-value="false" ng-disabled="order.status=='Completed'" />
+                            </td>
+                            <td>&nbsp</td>
+                            <td>Est. Shipping</td>
+                            <td>
+                                <input name="orderestship" datetime-picker date-format="yyyy-MM-dd" date-only ng-model="order.estShipDt" ng-disabled="order.status=='Completed'" pattern="\d{4}\-((0[1-9])|(1[012]))\-(([0][1-9])|([12][0-9])|(3[01]))" />
+                                <div ng-if="orderform.orderestship.$dirty">
+                                    <div>
+                                        <span id="orderESFormat" ng-show="orderform.orderestship.$error.pattern">Date must be in the YYYY-MM-DD format</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <span ng-show="order.test==true || order.status!='Completed'">
+                        <input ng-show="!(order.isNew=='true') && (order.status=='Draft' || order.status=='Submitted')" id="orderUpdate" type="button" value="Update" ng-click="updateOrder()" />
+                        <input ng-show="order.isNew=='true'" id="orderSave" type="button" value="Save" ng-click="saveOrder()" />
+                        <span ng-show="order.status=='Draft' &&  !(order.isNew=='true')">&nbsp;<input id="orderSubmit" type="button" value="Submit" ng-click="submitOrder()" /></span>
+                        <span ng-show="order.status=='Submitted'">&nbsp;<input id="orderReject" type="button" value="Reject" ng-click="rejectOrder()" /></span>
+                        <span ng-show="order.status=='Submitted'">&nbsp;<input id="orderApprove" type="button" value="Approve" ng-click="approveOrder()" /></span>
+                        <span ng-show="order.status=='Approved'">&nbsp;<input id="orderShip" type="button" value="Ship" ng-click="shipOrder()" /></span>
+                        <span>&nbsp;<input id="orderDelete" type="button" value="Delete" ng-click="deleteOrder()" /></span>
+                    </span>
+                </div>
+            </div>
+        </section>
+        <br />
+        <section id="promosection" class="bordered" ng-hide="order.isNew=='true' || !(order.name || orderform.ordername.$dirty || order.isNew=='true')">
+            <div class="table-wrapper">
+                <table id="promoList">
+                    <caption class="section">Promotions</caption>
+                    <thead>
+                        <tr>
+                            <th width="5%">&nbsp;</th>
+                            <th width="8%">Id</th>
+                            <th width="42%">Promotion</th>
+                            <th width="15%">Due In Stores</th>
+                            <th width="30%">
+                                <span>Ship To</span><span class="major">&nbsp;</span><span><a href="" id="addPromoButton" ng-click="addPromo()" class="button small" ng-show="(order.status=='Draft' || order.status=='Submitted')">Add</a></span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="promo in order.promotions">
+                            <td class="align-left" ng-click="selectPromotion(promo)" ng-show="promo.id==promotion.id">&#9654;</td>
+                            <td class="align-left" ng-click="selectPromotion(promo)" ng-hide="promo.id==promotion.id">&nbsp;</td>
+                            <td class="align-left" ng-click="selectPromotion(promo)">{{promo.id}}</td>
+                            <td class="align-left" ng-click="selectPromotion(promo)">{{promo.promoText}}</td>
+                            <td class="align-left" ng-click="selectPromotion(promo)">{{promo.dueInStoreDt}}</td>
+                            <td class="align-left" ng-click="selectPromotion(promo)">{{getShipText(promo.shipTo)}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-show="(promotion.promoText || orderform.promotext.$dirty || promotion.isNew=='true')">
+                <div class="dataentry" ng-show="!(sign.signType || sgn.isNew=='true')">
+                    <strong class="">{{promotion.promoText}} promotion</strong>
+                    <table class="layout">
+                        <tr>
+                            <td>Text</td>
+                            <td>
+                                <input name="promotext" ng-model="promotion.promoText" required ng-disabled="order.status=='Completed'" pattern="[a-zA-Z0-9].{3,499}" />
+                                <div ng-if="orderform.promotext.$dirty">
+                                    <div>
+                                        <span id="promoTextRequired" ng-show="orderform.promotext.$error.required">Required</span>
+                                        <span id="promoTextFormat" ng-show="orderform.promotext.$error.pattern">Name must be at least 4 characters long and start with a letter or number with no more then 500 characters</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>&nbsp</td>
+                            <td>Due In Store</td>
+                            <td>
+                                <input name="promodis" datetime-picker date-format="yyyy-MM-dd" date-only ng-model="promotion.dueInStoreDt" ng-disabled="order.status=='Completed'" pattern="\d{4}\-((0[1-9])|(1[012]))\-(([0][1-9])|([12][0-9])|(3[01]))" />
+                                <div ng-if="orderform.promodis.$dirty">
+                                    <div>
+                                        <span id="promoDISFormat" ng-show="orderform.promodis.$error.pattern">Date must be in the YYYY-MM-DD format</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Ship To</td>
+                            <td>
+                                <select name="promoshipTo" ng-model="promotion.shipTo" required ng-disabled="order.status=='Completed'">
+                                    <option ng-repeat="item in data.shipLst" value="{{item.value}}" ng-selected="item.value==promotion.shipTo">{{item.text}}</option>
+                                </select>
+                            </td>
+                            <td>&nbsp</td>
+                            <td>Estimate Shipping</td>
+                            <td>
+                                <input name="promoestship" datetime-picker date-format="yyyy-MM-dd" date-only ng-model="promotion.estShipDt" ng-disabled="order.status=='Completed'" pattern="\d{4}\-((0[1-9])|(1[012]))\-(([0][1-9])|([12][0-9])|(3[01]))" />
+                                <div ng-if="orderform.promoestship.$dirty">
+                                    <div>
+                                        <span id="promoESFormat" ng-show="orderform.promoestship.$error.pattern">Date must be in the YYYY-MM-DD format</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Notes</td>
+                            <td colspan="4"><textarea name="promonotes" ng-model="promotion.notes" rows="3" style="width:100%" maxlength="4000"></textarea></td>
+                        </tr>
+                    </table>
+                    <span ng-show="order.status!='Completed'">
+                        <input ng-show="!(promotion.isNew=='true') && (order.status=='Draft' || order.status=='Submitted')" id="promoUpdate" type="button" value="Update" ng-click="updatePromotion()" />
+                        <input ng-show="promotion.isNew=='true'" id="promoSave" type="button" value="Save" ng-click="savePromotion()" />
+                        <input ng-show="!(promotion.isNew=='true') && (order.status=='Draft' || order.status=='Submitted')" type="button" id="promoDelete" value="Delete" ng-click="deletePromotion()" />
+                    </span>
+                </div>
+            </div>
+        </section>
+        <br />
+        <section id="signsection" class="bordered" ng-hide="promotion.isNew=='true' || !(promotion.promoText || orderform.promotext.$dirty || promotion.isNew=='true')">
+            <div class="table-wrapper">
+                <table id="signList">
+                    <caption class="section">Signs</caption>
+                    <thead>
+                        <tr>
+                            <th width="5%">&nbsp;</th>
+                            <th width="8%">Id</th>
+                            <th width="22%">Sign Type</th>
+                            <th width="15%">Status</th>
+                            <th width="20%">Dimension</th>
+                            <th width="30%">
+                                <span>Ship To</span><span class="major">&nbsp;</span><span><a href="" id="addSignButton" ng-click="addSign()" class="button small" ng-show="(order.status=='Draft' || order.status=='Submitted')">Add</a></span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="sgn in promotion.signs">
+                            <td ng-click="selectSign(sgn)" ng-show="sgn.id==sign.id">&#9654;</td>
+                            <td ng-click="selectSign(sgn)" ng-hide="sgn.id==sign.id">&nbsp;</td>
+                            <td class="align-left" ng-click="selectSign(sgn)">{{sgn.id}}</td>
+                            <td class="align-left" ng-click="selectSign(sgn)">{{getSignText(sgn.signType)}}</td>
+                            <td class="align-left" ng-click="selectSign(sgn)">{{sgn.status}}</td>
+                            <td class="align-left" ng-click="selectSign(sgn)" ng-show="sgn.width && sgn.width!=0">{{sgn.width}} x {{sgn.height}}</td>
+                            <td class="align-left" ng-click="selectSign(sgn)" ng-show="!(sgn.width && sgn.width!=0)">&nbsp;</td>
+                            <td class="align-left" ng-click="selectSign(sgn)">{{getShipText(sgn.shipTo)}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-show="sign.signType || sign.isNew=='true'">
+                <div class="dataentry">
+                    <strong>{{getSignText(sign.signType)}} sign - {{sign.status}}</strong>
+                    <table class="layout">
+                        <tr>
+                            <td>Sign Type</td>
+                            <td>
+                                <select name="signType" ng-options="item.value as item.text for item in data.signTypeLst" ng-model="sign.signType" required ng-disabled="order.status=='Completed'"></select>
+                                <div ng-if="orderform.signType.$dirty">
+                                    <div>
+                                        <span id="signTypeRequired" ng-show="orderform.signType.$error.required">Required</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>&nbsp</td>
+                            <td>Dimension</td>
+                            <td>
+                                <input name="signWidth" ng-model="sign.width" required ng-disabled="order.status=='Completed'" pattern="([1-9]\d{0,2})|(\d{1,3}\.\d{1,3})" />X<input name="signHeight" ng-model="sign.height" required ng-disabled="order.status=='Completed'" pattern="([1-9]\d{0,2})|(\d{1,3}\.\d{1,3})" />
+                                <div ng-if="orderform.signWidth.$dirty">
+                                    <div>
+                                        <span id="signWidthRequired" ng-show="orderform.signWidth.$error.required">Width is required</span>
+                                        <span id="signWidthFormat" ng-show="orderform.signWidth.$error.pattern">Width must be a decimal number</span>
+                                    </div>
+                                </div>
+                                <div ng-if="orderform.signHeight.$dirty">
+                                    <div>
+                                        <span id="signHeightRequired" ng-show="orderform.signHeight.$error.required">Height is required</span>
+                                        <span id="signHeightFormat" ng-show="orderform.signHeight.$error.pattern">Height must be a decimal number</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Ship To</td>
+                            <td>
+                                <div ng-if="(promotion.shipTo && promotion.shipTo==4) || (!(promotion.shipTo) && order.shipTo==4)">
+                                    <div id="signShipTo" ng-dropdown-multiselect="Select" options="data.storeLst" selected-model="sign.shippings" extra-settings="signShipToSettings"></div>
+                                </div>
+                                <div ng-if="(promotion.shipTo && promotion.shipTo==2) || (!(promotion.shipTo) && order.shipTo==2)">
+                                    <div id="signShipTo" ng-dropdown-multiselect="Select" options="data.divisionLst" selected-model="sign.shippings" extra-settings="signShipToSettings"></div>
+                                </div>
+                                <div ng-if="(promotion.shipTo && promotion.shipTo==1) || (!(promotion.shipTo) && order.shipTo==1)">
+                                    <div id="signShipTo" ng-dropdown-multiselect="Select" options="data.hqLst" selected-model="sign.shippings" extra-settings="signShipToSettings"></div>
+                                </div>
+                           </td>
+                            <td>&nbsp</td>
+                            <td>Stock</td>
+                            <td>
+                                <select name="stock" ng-options="item.value as item.text for item in data.stockLst" ng-model="sign.stock" required ng-disabled="order.status=='Completed'"></select>
+                                <div ng-if="orderform.stock.$dirty">
+                                    <div>
+                                        <span id="signStockRequired" ng-show="orderform.stock.$error.required">Required</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Notes</td>
+                            <td colspan="4"><textarea name="signNotes" ng-model="sign.notes" rows="3" style="width:100%"></textarea></td>
+                        </tr>
+                    </table>
+                    <span ng-show="order.status!='Completed'">
+                        <input ng-show="!(sign.isNew=='true') && (order.status=='Draft' || order.status=='Submitted')" id="signUpdate" type="button" value="Update" ng-click="updateSign()" />
+                        <input ng-show="sign.isNew=='true'" id="signSave" type="button" value="Save" ng-click="saveSign()" />
+                        <span ng-show="sign.status=='Pending'">&nbsp;<input id="signStart" type="button" value="Start" ng-click="startSign()" /></span>
+                        <span ng-show="sign.status=='Started'">&nbsp;<input id="signComplete" type="button" value="Complete" ng-click="completeSign()" /></span>
+                        <span ng-show="sign.status=='Completed'">&nbsp;<input id="signShip" type="button" value="Ship" ng-click="shipSign()" /></span>
+                        <span ng-show="sign.isNew=='true' || (order.status=='Draft' || order.status=='Submitted')">&nbsp;<input id="signDelete" type="button" value="Delete" ng-click="deleteSign()" /></span>
+                    </span>
+                </div>
+            </div>
+        </section>
+    </form>
+</section>
+
+

@@ -1,0 +1,54 @@
+﻿<!DOCTYPE HTML>
+<!--
+    Stellar by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+<head>
+    <title>Order Manager</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js"></script>
+    <script src="/app/lodash/lodash.js"></script>
+    <script src="/app/angularjs-datetime-picker.min.js"></script>
+    <script src="/app/angularjs-dropdown-multiselect.min.js"></script>
+    <link rel="stylesheet" href="/assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/angularjs-datetime-picker.css" />
+    <!--[if lte IE 9]><link rel="stylesheet" href="/assets/css/ie9.css" /><![endif]-->
+    <script src="/app/poc.module.js"></script>
+    <script src="/app/order/order.view.js"></script>
+    <script src="/app/home/home.view.js"></script>
+</head>
+<body ng-app="pocApp">
+
+    <!-- Wrapper -->
+    <div id="wrapper">
+
+        <!-- Header -->
+        <header id="header" class="alt">
+            <label><strong>Sign Orders</strong><small align="right">We provide the signs of your success!</small></label>
+        </header>
+
+        <!-- Nav -->
+        <nav id="nav">
+            <ul>
+                <li><a href='/#!/home' class="active">Dashboard</a></li>
+                <li><a href='/#!/order'>Order</a></li>
+                <li><a href='/#!/profile'>Profiler</a></li>
+                <li><a href='/#!/dod'>Design On Demand</a></li>
+                <li><a href='/#!/support'>Support</a></li>
+            </ul>
+        </nav>
+        <div ng-view></div>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <span style="width:100%;text-align:center">
+                <span>&copy;St&eacute;phan Bourges. All rights reserved. Design from <a href="https://html5up.net">HTML5 UP</a>.</span>
+            </span>
+        </footer>
+    </div>
+</body>
+</html>
