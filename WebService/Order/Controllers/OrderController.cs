@@ -13,7 +13,7 @@ namespace Order.Controllers
     [RoutePrefix("api/Order")]
     public class OrderController : ApiController
     {
-        private static String SQLCONSTR = @"Data Source=TESTDATAW\dev14;Initial Catalog = GSP_PROD01; User ID = GSPUser; Password=gsp#123;Pooling=True;Max Pool Size=10;Connect Timeout=10";
+        private static String SQLCONSTR = @"Data Source=DEMO\dev;Initial Catalog = DEMO; User ID = DemoUser; Password=dem0!2learn;Pooling=True;Max Pool Size=10;Connect Timeout=10";
         [Route("")]
         [HttpGet]
         // GET api/Order?id=1
