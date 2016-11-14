@@ -23,4 +23,4 @@ Note that the Web.config was changed to allow cross origin during development si
 ```
 
 #Walk through
-The [Wiki](https://bitbucket.org/gspretaildev/popdemo/wiki/Home) goes through the demo requirements, design and implementation as well as my impression.
+The [Wiki](https://github.com/sbourges/AngularJS-POC/wiki) goes through the demo requirements, design and implementation as well as my impression.
